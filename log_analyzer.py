@@ -2,11 +2,13 @@ import sys
 
 file_name = sys.argv[1]
 
+#filters declaration
 filter_level = None
 filter_from = None
 filter_to = None
 export_file = None
 
+#filters logic
 i = 2
 while i < len(sys.argv):
     if sys.argv[i] == "--level":
@@ -28,9 +30,9 @@ while i < len(sys.argv):
     else:
         i += 1
 
-
 file = open(file_name)
 
+#counters
 errors = 0
 inf = 0
 warnings = 0
@@ -38,13 +40,16 @@ error_count = {}
 most_common_error = 0
 total_logs = 0
 
+#loop through lines to read them
 for line in file:
     part = line.strip().split()
 
+    #extract log parts
     time_stamp = part[0] + " " + part[1]
     level = part[2]
     message = " ".join(part[3:])
 
+    #apply filters
     if filter_level is not None:
         if level != filter_level:
             continue
@@ -59,11 +64,13 @@ for line in file:
 
     total_logs += 1
 
+    #print logs
     print(line.strip())
     print("time stamp: " + time_stamp)
     print("level: " + level)
     print("message: " + message)
 
+    #count levels
     if level == "ERROR":
         errors += 1
 
@@ -80,14 +87,17 @@ for line in file:
 
 file.close()
 
+#final summary
 print(f"ERRORS: {errors}")
 print(f"INF: {inf}")
 print(f"WARNING: {warnings}")
 
+#find most common error
 if error_count:
     most_common_error = max(error_count, key=error_count.get)
     print("Most frequent error:", most_common_error)
 
+#export to CSV
 if export_file is not None:
     f = open(export_file, "w")
 
