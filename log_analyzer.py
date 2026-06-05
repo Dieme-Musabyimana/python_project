@@ -25,7 +25,6 @@ for line in file:
         if message not in error_count:
             error_count[message]=1
         else: error_count[message]+=1
-        print("Most frequent error:" + str(max(error_count)))
     elif level == "INFO":
         inf+=1
     elif level == "WARNING":
@@ -34,6 +33,5 @@ for line in file:
 print(f"ERRORS: {errors}")
 print(f"INF: {inf}")
 print(f"WARNING: {warnings}")
-
-
+print("Most frequent error:", max(error_count, key=error_count.get))
 file.close()
