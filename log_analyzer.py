@@ -2,36 +2,102 @@ import sys
 
 file_name = sys.argv[1]
 
-#Read file
+filter_level = None
+filter_from = None
+filter_to = None
+export_file = None
+
+i = 2
+while i < len(sys.argv):
+    if sys.argv[i] == "--level":
+        filter_level = sys.argv[i + 1]
+        i += 2
+
+    elif sys.argv[i] == "--from":
+        filter_from = sys.argv[i + 1]
+        i += 2
+
+    elif sys.argv[i] == "--to":
+        filter_to = sys.argv[i + 1]
+        i += 2
+
+    elif sys.argv[i] == "--export":
+        export_file = sys.argv[i + 1]
+        i += 2
+
+    else:
+        i += 1
+
+
 file = open(file_name)
+
 errors = 0
 inf = 0
 warnings = 0
-error_count = { }
+error_count = {}
+most_common_error = 0
+total_logs = 0
 
 for line in file:
-    print(line.strip())
     part = line.strip().split()
+
     time_stamp = part[0] + " " + part[1]
     level = part[2]
     message = " ".join(part[3:])
+
+    if filter_level is not None:
+        if level != filter_level:
+            continue
+
+    if filter_from is not None:
+        if time_stamp < filter_from:
+            continue
+
+    if filter_to is not None:
+        if time_stamp > filter_to:
+            continue
+
+    total_logs += 1
+
+    print(line.strip())
     print("time stamp: " + time_stamp)
     print("level: " + level)
     print("message: " + message)
 
-
     if level == "ERROR":
-        errors+=1
+        errors += 1
+
         if message not in error_count:
-            error_count[message]=1
-        else: error_count[message]+=1
+            error_count[message] = 1
+        else:
+            error_count[message] += 1
+
     elif level == "INFO":
-        inf+=1
+        inf += 1
+
     elif level == "WARNING":
-        warnings+=1
+        warnings += 1
+
+file.close()
 
 print(f"ERRORS: {errors}")
 print(f"INF: {inf}")
 print(f"WARNING: {warnings}")
-print("Most frequent error:", max(error_count, key=error_count.get))
-file.close()
+
+if error_count:
+    most_common_error = max(error_count, key=error_count.get)
+    print("Most frequent error:", most_common_error)
+
+if export_file is not None:
+    f = open(export_file, "w")
+
+    f.write("metric,value\n")
+    f.write(f"total_logs,{total_logs}\n")
+    f.write(f"errors,{errors}\n")
+    f.write(f"warnings,{warnings}\n")
+    f.write(f"info,{inf}\n")
+    f.write(f"most_common_error,{most_common_error}\n")
+
+    f.close()
+
+    print("\nCSV exported to:", export_file)
