@@ -7,6 +7,7 @@ file = open(file_name)
 errors = 0
 inf = 0
 warnings = 0
+error_count = { }
 
 for line in file:
     print(line.strip())
@@ -21,6 +22,10 @@ for line in file:
 
     if level == "ERROR":
         errors+=1
+        if message not in error_count:
+            error_count[message]=1
+        else: error_count[message]+=1
+        print("Most frequent error:" + str(max(error_count)))
     elif level == "INFO":
         inf+=1
     elif level == "WARNING":
