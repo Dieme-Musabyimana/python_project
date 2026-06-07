@@ -1,0 +1,6 @@
+metric,value
+total_logs,5
+errors,3
+warnings,1
+info,1
+most_common_error,Database timeout
